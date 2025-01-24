@@ -61,6 +61,8 @@ func (extender *Extender) compute() {
 			((extender.Src>>8)&0xF)<<1
 
 		extender.ImmExt = sext(newExt, 13)
+	case 0b11:
+
 	}
 
 }

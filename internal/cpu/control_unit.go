@@ -10,6 +10,7 @@ const (
 	r_opcode    = 0b0110011
 	beq_opcode  = 0b1100011
 	addi_opcode = 0b0010011
+	jal_opcode  = 0b1101111
 )
 
 type ControlUnit struct {
@@ -20,6 +21,7 @@ type ControlUnit struct {
 	Zero     bool
 	//Out
 	Branch     bool
+	Jump       bool
 	ALUOp      int
 	PCSrc      int
 	ResultSrc  int
@@ -40,6 +42,7 @@ func (control *ControlUnit) compute() error {
 		control.ResultSrc = 1
 		control.Branch = false
 		control.ALUOp = 0b00
+		control.Jump = false
 	case sw_opcode:
 		control.RegWrite = false
 		control.ImmSrc = 0b01
@@ -47,6 +50,7 @@ func (control *ControlUnit) compute() error {
 		control.MemWrite = true
 		control.Branch = false
 		control.ALUOp = 0b00
+		control.Jump = false
 	case r_opcode:
 		control.RegWrite = true
 		control.ALUSrc = 1
@@ -54,6 +58,7 @@ func (control *ControlUnit) compute() error {
 		control.ResultSrc = 0
 		control.Branch = false
 		control.ALUOp = 0b10
+		control.Jump = false
 	case beq_opcode:
 		control.RegWrite = false
 		control.ImmSrc = 0b10
@@ -61,6 +66,7 @@ func (control *ControlUnit) compute() error {
 		control.MemWrite = false
 		control.Branch = true
 		control.ALUOp = 0b01
+		control.Jump = false
 	case addi_opcode:
 		control.RegWrite = true
 		control.ImmSrc = 0
@@ -68,7 +74,15 @@ func (control *ControlUnit) compute() error {
 		control.MemWrite = false
 		control.ResultSrc = 0
 		control.Branch = false
+		control.Jump = false
 		control.ALUOp = 0b10
+	case jal_opcode:
+		control.RegWrite = true
+		control.ImmSrc = 3
+		control.MemWrite = false
+		control.ResultSrc = 2
+		control.Branch = false
+		control.Jump = true
 	default:
 		return errors.New("invalid opcode")
 	}
@@ -100,7 +114,7 @@ func (control *ControlUnit) compute() error {
 }
 
 func (control *ControlUnit) computePCSrc() {
-	if control.Zero && control.Branch {
+	if control.Zero && control.Branch || control.Jump {
 		control.PCSrc = 1
 	} else {
 		control.PCSrc = 0

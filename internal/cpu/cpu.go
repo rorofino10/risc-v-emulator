@@ -79,6 +79,8 @@ func (c *CPU) Execute() error {
 		c.reg_mem.WD3 = uint32(c.alu.AluResult)
 	case 1:
 		c.reg_mem.WD3 = c.data_mem.RD
+	case 2:
+		c.reg_mem.WD3 = c.pc.counter + 4
 	}
 
 	c.control_unit.computePCSrc()
