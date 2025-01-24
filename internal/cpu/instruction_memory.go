@@ -1,7 +1,7 @@
 package cpu
 
 const (
-	INSTRUCTION_MEMORY_SIZE = 16384
+	INSTRUCTION_MEMORY_SIZE = 0xFFFFFFFF
 )
 
 type InstructionMemory struct {

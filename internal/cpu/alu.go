@@ -11,6 +11,7 @@ type ALU struct {
 	// Out
 	AluResult int32
 	Zero      bool
+	Sign      bool // True is positive
 }
 
 func (alu *ALU) compute() error {
@@ -29,5 +30,6 @@ func (alu *ALU) compute() error {
 		return errors.New("unknown alu op code")
 	}
 	alu.Zero = alu.AluResult == 0
+	alu.Sign = alu.AluResult>>31 == 0
 	return nil
 }

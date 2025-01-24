@@ -5,12 +5,12 @@ import (
 )
 
 const (
-	lw_opcode   = 0b0000011
-	sw_opcode   = 0b0100011
-	r_opcode    = 0b0110011
-	beq_opcode  = 0b1100011
-	addi_opcode = 0b0010011
-	jal_opcode  = 0b1101111
+	lw_opcode  = 0b0000011
+	sw_opcode  = 0b0100011
+	r_opcode   = 0b0110011
+	b_opcode   = 0b1100011
+	i_opcode   = 0b0010011
+	jal_opcode = 0b1101111
 )
 
 type ControlUnit struct {
@@ -59,7 +59,7 @@ func (control *ControlUnit) compute() error {
 		control.Branch = false
 		control.ALUOp = 0b10
 		control.Jump = false
-	case beq_opcode:
+	case b_opcode:
 		control.RegWrite = false
 		control.ImmSrc = 0b10
 		control.ALUSrc = 0
@@ -67,7 +67,7 @@ func (control *ControlUnit) compute() error {
 		control.Branch = true
 		control.ALUOp = 0b01
 		control.Jump = false
-	case addi_opcode:
+	case i_opcode:
 		control.RegWrite = true
 		control.ImmSrc = 0
 		control.ALUSrc = 1

@@ -1,5 +1,7 @@
 package cpu
 
+import "fmt"
+
 type instruction uint32
 
 type CPU struct {
@@ -30,6 +32,13 @@ func New() *CPU {
 	// cpu.pc.counter = 0x100c
 	// cpu.data_mem.storeWordAt(0x2000, 10)
 	return cpu
+}
+
+func (c *CPU) Run(clock chan struct{}) {
+	for range clock {
+		fmt.Println(c.reg_mem.getRegister(5))
+		c.Execute()
+	}
 }
 
 func (c *CPU) Execute() error {

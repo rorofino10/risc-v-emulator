@@ -38,3 +38,7 @@ func (reg_mem *RegisterMemory) setRegister(reg int, data uint32) error {
 	reg_mem.registers[reg] = data
 	return nil
 }
+
+func (reg_mem RegisterMemory) getRegister(reg int) uint32 {
+	return reg_mem.registers[reg]
+}
