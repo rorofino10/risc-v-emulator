@@ -1,11 +1,10 @@
 package cpu
 
-import "fmt"
-
 type instruction uint32
 
 type CPU struct {
 	pc           PC
+	Clock        chan struct{}
 	instr_mem    InstructionMemory
 	control_unit ControlUnit
 	extender     Extender
@@ -17,6 +16,7 @@ type CPU struct {
 func New() *CPU {
 	cpu := &CPU{
 		pc:           PC{},
+		Clock:        make(chan struct{}),
 		instr_mem:    InstructionMemory{},
 		control_unit: ControlUnit{},
 		extender:     Extender{},
@@ -27,16 +27,15 @@ func New() *CPU {
 	instructions := []instruction{0x00128293, 0xfe000ee3}
 
 	cpu.instr_mem.loadInstructions(instructions)
-	// cpu.instr_mem.setInstructionAt(0x100c, 0xFE420AE3)
 	cpu.reg_mem.setRegister(4, 14)
-	// cpu.pc.counter = 0x100c
-	// cpu.data_mem.storeWordAt(0x2000, 10)
 	return cpu
 }
 
-func (c *CPU) Run(clock chan struct{}) {
-	for range clock {
-		fmt.Println(c.reg_mem.getRegister(5))
+func (c *CPU) Run() {
+	for range c.Clock {
+		// for i, v := range c.reg_mem.registers {
+		// 	fmt.Printf("[x%d]:%d\n", i, v)
+		// }
 		c.Execute()
 	}
 }

@@ -15,28 +15,26 @@ func main() {
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
 
-	clock := make(chan struct{})
-
 	var wg sync.WaitGroup
 
+	processor := cpu.New()
 	wg.Add(1)
 	go func() {
-		processor := cpu.New()
 
 		defer wg.Done()
-		processor.Run(clock)
+		processor.Run()
 	}()
 
-	ticker := time.NewTicker(1000 * time.Millisecond)
+	ticker := time.NewTicker(100 * time.Millisecond)
 	defer ticker.Stop()
 
 	for {
 		select {
 		case <-ticker.C:
-			clock <- struct{}{}
+			processor.Clock <- struct{}{}
 		case <-stop:
 			fmt.Println("Stopping")
-			close(clock)
+			close(processor.Clock)
 			wg.Wait()
 			return
 		}
