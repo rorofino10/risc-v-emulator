@@ -1,5 +1,7 @@
 package cpu
 
+import "fmt"
+
 type instruction uint32
 
 type CPU struct {
@@ -24,7 +26,7 @@ func New() *CPU {
 		reg_mem:      RegisterMemory{},
 		data_mem:     DataMemory{},
 	}
-	instructions := []instruction{0x00128293, 0xfe000ee3}
+	instructions := []instruction{0x00128293, 0xffdff0ef}
 
 	cpu.instr_mem.loadInstructions(instructions)
 	cpu.reg_mem.setRegister(4, 14)
@@ -33,9 +35,10 @@ func New() *CPU {
 
 func (c *CPU) Run() {
 	for range c.Clock {
-		// for i, v := range c.reg_mem.registers {
-		// 	fmt.Printf("[x%d]:%d\n", i, v)
-		// }
+		fmt.Print("\033[H\033[2J")
+		for i, v := range c.reg_mem.registers {
+			fmt.Printf("[x%d]:%d\n", i, v)
+		}
 		c.Execute()
 	}
 }
@@ -53,12 +56,11 @@ func (c *CPU) Execute() error {
 	c.control_unit.compute()
 
 	// Handle Register Component
-	c.reg_mem.A1 = uint8((uint32(instr) >> 15) & 0x1F)
-	c.reg_mem.A2 = uint8((uint32(instr) >> 20) & 0x1F)
-	c.reg_mem.A3 = uint8((uint32(instr) >> 7) & 0x1F)
+	c.reg_mem.A1 = uint8(instr >> 15 & 0x1F)
+	c.reg_mem.A2 = uint8(instr >> 20 & 0x1F)
+	c.reg_mem.A3 = uint8(instr >> 7 & 0x1F)
 	c.reg_mem.WE3 = c.control_unit.RegWrite
 	c.reg_mem.compute()
-	defer c.reg_mem.computeMemory()
 
 	c.extender.Src = uint32(instr)
 	c.extender.ImmSrc = c.control_unit.ImmSrc
@@ -90,6 +92,7 @@ func (c *CPU) Execute() error {
 	case 2:
 		c.reg_mem.WD3 = c.pc.counter + 4
 	}
+	c.reg_mem.computeMemory()
 
 	c.control_unit.computePCSrc()
 	c.pc.ImmExt = c.extender.ImmExt

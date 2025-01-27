@@ -24,6 +24,12 @@ func (data_mem *DataMemory) compute() {
 	chunk3 := data_mem.memory[data_mem.A+2]
 	chunk4 := data_mem.memory[data_mem.A+3]
 
+	if data_mem.WE {
+		data_mem.memory[data_mem.A] = byte(data_mem.WD & 0xFF)
+		data_mem.memory[data_mem.A+1] = byte(data_mem.WD >> 8 & 0xFF)
+		data_mem.memory[data_mem.A+2] = byte(data_mem.WD >> 16 & 0xFF)
+		data_mem.memory[data_mem.A+3] = byte(data_mem.WD >> 24 & 0xFF)
+	}
 	data_mem.RD = uint32(chunk1) | (uint32(chunk2) << 8) | (uint32(chunk3) << 16) | (uint32(chunk4) << 24)
 }
 

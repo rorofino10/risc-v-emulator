@@ -62,7 +62,8 @@ func (extender *Extender) compute() {
 
 		extender.ImmExt = sext(newExt, 13)
 	case 0b11:
-
+		newExt := (extender.Src>>20&1)<<11 | (extender.Src>>31)<<20 | (extender.Src>>21&0x3FF)<<1 | (extender.Src>>12&0xFF)<<12
+		extender.ImmExt = sext(newExt, 21)
 	}
 
 }
