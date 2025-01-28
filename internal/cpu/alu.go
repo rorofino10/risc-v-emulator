@@ -25,7 +25,7 @@ func (alu *ALU) compute() error {
 	case 0b011: // OR
 		alu.AluResult = alu.SrcA | alu.SrcB
 	case 0b101: // SLT
-		alu.AluResult = (alu.SrcA - alu.SrcB) >> 31
+		alu.AluResult = (alu.SrcA - alu.SrcB) >> 31 & 1
 	default:
 		return errors.New("unknown alu control")
 	}

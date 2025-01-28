@@ -2,7 +2,7 @@ package cpu
 
 import "fmt"
 
-type instruction uint32
+type Instruction uint32
 
 type CPU struct {
 	pc           PC
@@ -27,20 +27,19 @@ func New() *CPU {
 		data_mem:     DataMemory{},
 	}
 	// instructions := []instruction{0x00128293, 0xffdff0ef}
-	instructions := []instruction{
-		0xffc00513,
-		0x00000033,
-		0x004000e7,
-	}
-	cpu.instr_mem.loadInstructions(instructions)
+
 	return cpu
+}
+
+func (c *CPU) LoadInstructions(instructions []Instruction) {
+	c.instr_mem.loadInstructions(instructions)
 }
 
 func (c *CPU) Run() {
 	for range c.Clock {
 		fmt.Print("\033[H\033[2J")
 		for i, v := range c.reg_mem.registers {
-			fmt.Printf("[x%d]:%d\n", i, v)
+			fmt.Printf("[x%d]:%x\n", i, v)
 		}
 		c.Execute()
 	}
