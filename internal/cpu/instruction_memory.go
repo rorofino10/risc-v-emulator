@@ -1,7 +1,7 @@
 package cpu
 
 const (
-	INSTRUCTION_MEMORY_SIZE = 0xFFFFFFFF
+	INSTRUCTION_MEMORY_SIZE = 0xFFFFFFFF + 4 // +4 so it doesnt go out of bounds
 )
 
 type InstructionMemory struct {
