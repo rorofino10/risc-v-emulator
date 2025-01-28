@@ -26,10 +26,13 @@ func New() *CPU {
 		reg_mem:      RegisterMemory{},
 		data_mem:     DataMemory{},
 	}
-	instructions := []instruction{0x00128293, 0xffdff0ef}
-
+	// instructions := []instruction{0x00128293, 0xffdff0ef}
+	instructions := []instruction{
+		0xffc00513,
+		0x00000033,
+		0x004000e7,
+	}
 	cpu.instr_mem.loadInstructions(instructions)
-	cpu.reg_mem.setRegister(4, 14)
 	return cpu
 }
 
@@ -79,6 +82,8 @@ func (c *CPU) Execute() error {
 	c.control_unit.Zero = c.alu.Zero
 
 	c.data_mem.A = uint32(c.alu.AluResult)
+	fmt.Println(c.alu.AluResult)
+	fmt.Println(c.data_mem.A)
 	c.data_mem.WD = c.reg_mem.RD2
 	c.data_mem.WE = c.control_unit.MemWrite
 	c.data_mem.compute()
@@ -96,6 +101,7 @@ func (c *CPU) Execute() error {
 
 	c.control_unit.computePCSrc()
 	c.pc.ImmExt = c.extender.ImmExt
+	c.pc.AluRes = uint32(c.alu.AluResult)
 	c.pc.PCSrc = c.control_unit.PCSrc
 	c.pc.compute()
 	return nil

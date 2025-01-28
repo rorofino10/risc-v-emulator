@@ -1,7 +1,7 @@
 package cpu
 
 const (
-	DATA_MEMORY_SIZE = 0xFFFFFFFF
+	DATA_MEMORY_SIZE = 0xFFFFFFFF + 4
 )
 
 type DataMemory struct {
