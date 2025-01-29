@@ -26,7 +26,7 @@ func (reg_mem *RegisterMemory) compute() {
 }
 
 func (reg_mem *RegisterMemory) computeMemory() {
-	if reg_mem.WE3 {
+	if reg_mem.WE3 && reg_mem.A3 != 0 {
 		reg_mem.registers[reg_mem.A3] = reg_mem.WD3
 	}
 }

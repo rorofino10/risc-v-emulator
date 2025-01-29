@@ -15,8 +15,8 @@ type CPU struct {
 	data_mem     *DataMemory
 }
 
-func New() *CPU {
-	cpu := &CPU{
+func New() CPU {
+	cpu := CPU{
 		pc:           PC{},
 		Clock:        make(chan struct{}),
 		instr_mem:    new(InstructionMemory),
@@ -26,8 +26,6 @@ func New() *CPU {
 		reg_mem:      RegisterMemory{},
 		data_mem:     new(DataMemory),
 	}
-	// instructions := []instruction{0x00128293, 0xffdff0ef}
-
 	return cpu
 }
 
@@ -43,19 +41,15 @@ func (c *CPU) ResetPC() {
 func (c *CPU) Run() {
 	for range c.Clock {
 		fmt.Print("\033[H\033[2J")
-		for i, v := range c.reg_mem.registers {
-			fmt.Printf("[x%d]:%x\n", i, v)
-		}
+		// for i, v := range c.reg_mem.registers {
+		// fmt.Printf("[x%d]:%x\n", i, v)
+		// }
+		fmt.Printf("[x%d]:%x\n", 0, c.reg_mem.registers[0])
 		c.Execute()
 	}
 }
 
-func (c *CPU) Execute() error {
-	// Get Instruction using PC from Instruction Memory
-	c.instr_mem.A = c.pc.counter
-	c.instr_mem.compute()
-	instr := c.instr_mem.RD
-
+func (c *CPU) ExecuteInstruction(instr Instruction) error {
 	// Control Flags
 	c.control_unit.op = uint32(instr) & 0x7F
 	c.control_unit.funct3 = uint32(instr) >> 12 & 0x7
@@ -105,6 +99,15 @@ func (c *CPU) Execute() error {
 	c.pc.ImmExt = c.extender.ImmExt
 	c.pc.AluRes = uint32(c.alu.AluResult)
 	c.pc.PCSrc = c.control_unit.PCSrc
-	// c.pc.compute()
+	c.pc.compute()
 	return nil
+}
+
+func (c *CPU) Execute() error {
+	// Get Instruction using PC from Instruction Memory
+	c.instr_mem.A = c.pc.counter
+	c.instr_mem.compute()
+	instr := c.instr_mem.RD
+
+	return c.ExecuteInstruction(instr)
 }

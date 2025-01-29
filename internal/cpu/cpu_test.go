@@ -14,18 +14,27 @@ func TestSampleProgram(t *testing.T) {
 		0x004000e7,
 	}
 	c.LoadInstructions(instructions)
+
 	var err error = nil
 	for err == nil {
 		err = c.Execute()
 	}
 }
 
-var c *cpu.CPU = cpu.New().LoadInstructions([]cpu.Instruction{
-	0x00000013,
-})
+var c cpu.CPU = cpu.New()
 
-func BenchmarkAddi(b *testing.B) {
+func BenchmarkNOP(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		c.Execute()
+		c.ExecuteInstruction(0x13)
+	}
+}
+func BenchmarkADDNOP(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		c.ExecuteInstruction(0x33)
+	}
+}
+func BenchmarkJUMPNOP(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		c.ExecuteInstruction(0x6f)
 	}
 }
