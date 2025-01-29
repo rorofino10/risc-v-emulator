@@ -7,32 +7,37 @@ type Instruction uint32
 type CPU struct {
 	pc           PC
 	Clock        chan struct{}
-	instr_mem    InstructionMemory
+	instr_mem    *InstructionMemory
 	control_unit ControlUnit
 	extender     Extender
 	alu          ALU
 	reg_mem      RegisterMemory
-	data_mem     DataMemory
+	data_mem     *DataMemory
 }
 
 func New() *CPU {
 	cpu := &CPU{
 		pc:           PC{},
 		Clock:        make(chan struct{}),
-		instr_mem:    InstructionMemory{},
+		instr_mem:    new(InstructionMemory),
 		control_unit: ControlUnit{},
 		extender:     Extender{},
 		alu:          ALU{},
 		reg_mem:      RegisterMemory{},
-		data_mem:     DataMemory{},
+		data_mem:     new(DataMemory),
 	}
 	// instructions := []instruction{0x00128293, 0xffdff0ef}
 
 	return cpu
 }
 
-func (c *CPU) LoadInstructions(instructions []Instruction) {
+func (c *CPU) LoadInstructions(instructions []Instruction) *CPU {
 	c.instr_mem.loadInstructions(instructions)
+	return c
+}
+
+func (c *CPU) ResetPC() {
+	c.pc.counter = 0
 }
 
 func (c *CPU) Run() {
@@ -81,8 +86,6 @@ func (c *CPU) Execute() error {
 	c.control_unit.Zero = c.alu.Zero
 
 	c.data_mem.A = uint32(c.alu.AluResult)
-	fmt.Println(c.alu.AluResult)
-	fmt.Println(c.data_mem.A)
 	c.data_mem.WD = c.reg_mem.RD2
 	c.data_mem.WE = c.control_unit.MemWrite
 	c.data_mem.compute()
@@ -102,6 +105,6 @@ func (c *CPU) Execute() error {
 	c.pc.ImmExt = c.extender.ImmExt
 	c.pc.AluRes = uint32(c.alu.AluResult)
 	c.pc.PCSrc = c.control_unit.PCSrc
-	c.pc.compute()
+	// c.pc.compute()
 	return nil
 }

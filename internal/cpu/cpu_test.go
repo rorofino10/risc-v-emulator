@@ -14,7 +14,18 @@ func TestSampleProgram(t *testing.T) {
 		0x004000e7,
 	}
 	c.LoadInstructions(instructions)
-	for err := c.Execute(); err != nil; {
+	var err error = nil
+	for err == nil {
+		err = c.Execute()
+	}
+}
 
+var c *cpu.CPU = cpu.New().LoadInstructions([]cpu.Instruction{
+	0x00000013,
+})
+
+func BenchmarkAddi(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		c.Execute()
 	}
 }
